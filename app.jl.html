@@ -8,7 +8,7 @@
         <div v-katex:display="' \\frac{dS}{dt}(t) = - \\beta S(t) I(t) + \\gamma I(t) '" style="font-size:20px;"></div>
         <div v-katex:display="' \\frac{dI}{dt}(t) = \\beta S(t) I(t) - \\gamma I(t) '" style="font-size:20px;"></div>
         <p style="font-size:16px; color:gray;">
-            Where: <span v-katex="{&quot;expression&quot;:&quot;S(t)&quot;}"></span> and <span v-katex="{&quot;expression&quot;:&quot;I(t)&quot;}"></span> are respectively the number of susceptible infected individuals at time <span v-katex="{&quot;expression&quot;:&quot;t&quot;}"></span>, <span v-katex="{&quot;expression&quot;:&quot;\\beta&quot;}"></span> and <span v-katex="{&quot;expression&quot;:&quot;\\gamma&quot;}"></span> respectively the transmission and recovery rate.
+            Where: <span v-katex="{&quot;expression&quot;:&quot;S(t)&quot;}"></span> and <span v-katex="{&quot;expression&quot;:&quot;I(t)&quot;}"></span> are respectively the number of susceptible infected individuals at time <span v-katex="{&quot;expression&quot;:&quot;t&quot;}"></span>, <span v-katex="{&quot;expression&quot;:&quot;\\beta&quot;}"></span> and <span v-katex="{&quot;expression&quot;:&quot;\\gamma&quot;}"></span> respectively the transmission and recovery rate.</p>
     </div>
 </div>
 <!-- ------------------------------------------------------------------------------------------------------------------------ -->
@@ -50,10 +50,10 @@
 </div> -->
 
 <div class="container">
-    <h1>SIS Model Simulation</h1>
+    <h1>SI Model Simulation</h1>
     <p>Adjust the parameters below to simulate the SIS model:</p>
 
-    <div>
+    <!-- <div>
         <label for="beta">Infection Rate (β)</label>
         <q-slider v-model="beta" min="0.0" max="1.0" step="0.01"></q-slider>
     </div>
@@ -61,22 +61,27 @@
     <div>
         <label for="gamma">Recovery Rate (γ)</label>
         <q-slider v-model="gamma" min="0.0" max="1.0" step="0.01"></q-slider>
-    </div>
-
+        
+    </div> -->
     <div>
-        <label for="S">Initial Susceptible (S)</label>
-        <q-slider v-model="S" min="0.0" max="1.0" step="0.01"></q-slider>
-    </div>
-
-    <div>
-        <label for="I">Initial Infected (I)</label>
-        <q-slider v-model="I" min="0.0" max="1.0" step="0.01"></q-slider>
-    </div>
-
+        <label>Infection Rate (β): </label>
+        <input type="range" min="0.1" max="1.0" step="0.01" v-model="beta">
+        <span>{{ beta }}</span>
+      </div>
+      <div>
+        <label>Recovery Rate (γ): </label>
+        <input type="range" min="0.01" max="1.0" step="0.01" v-model="gamma">
+        <span>{{ gamma }}</span>
+      </div>
+      
+    <!-- <div>
+        <h2>Simulation Results</h2>
+        <plotly :data="solplot" :layout="layout" :displaylogo="false"></plotly>
+        
+    </div> -->
     <div>
         <h2>Simulation Results</h2>
-        <plotly :data="solplot" :layout="layout"></plotly>
-        <plotly :data="solplot2" :layout="layout"></plotly>
+        <plotly :data="solplot" :layout="layout" ></plotly>
     </div>
 </div>
 

@@ -1,64 +1,67 @@
 module App
 
-include("lib/SIModel.jl")
-using GenieFramework, DifferentialEquations, Turing, PlotlyBase
+include("lib/SIModel.jl")  # Include the file with your SIS model implementation
+using GenieFramework, DifferentialEquations, PlotlyBase, StippleLatex, ModelingToolkit, StatsPlots
 using .SiModel
+
+
+
 @genietools
 
-
+# function SIS!(dN, N, p, t)
+#     S = N[1]
+#     I = N[2]
+#     beta = p[1]
+#     gamma = p[2]
+    
+#     dN[1] = -(beta * S * I) + gamma * I   
+#     dN[2] = (beta * S * I) - gamma * I    
+end
 
 @app begin
     # Define reactive variables for the SIS model
-    @in beta = 0.5  # Default infection rate
-    @in gamma = 0.1 # Default recovery rate
-    # @in S0 = 0.99    # Initial susceptible population
-    # @in I0 = 0.01    # Initial infected population
+    @in beta = 0.5  
+    @in gamma = 0.1 
 
-    # Placeholder for the simulation results (will be updated by the model)
-    @out solplot = PlotData()
-    @out layout = PlotLayout(
-        xaxis=[PlotLayoutAxis(xy="x", title="Time")],
-        yaxis=[PlotLayoutAxis(xy="y", title="Population")],
-        title="SI Model",
-        showlegend=true
-
-    )
-
-    @private u_x = []  # Time vector
-    @private u_S = []  # Susceptible population
-    @private u_I = []  # Infected population
-
-    @onchange(beta, gamma) begin
+     # rendering the plot
+    @out solplot = [sacatter(x=[])]
+    @out layout = PlotlyBase.Layout(title="SI Model Simulation", xaxis_title="Time", yaxis_title="Population")
+    
+    @private u0 = [99, 10]  
+    @private tspan = (0.0, 100.0)
+    @private t = 0.0:1.0:100.0
+    @private theme = :light 
+    # React to changes in beta and gamma
+    @onchange beta, gamma begin
         # Define initial conditions
-        u0 = [0.99, 0.01]  # Initial susceptible and infected populations
         p = [beta, gamma]  # Parameters for infection and recovery rates
-        tspan = (0.0, 100.0)
 
-        # Define the ODE problem
-        prob = ODEProblem(SIModel.SIS!, u0, tspan, p)
+        prob = ODEProblem(SiModel.SIS!, u0, tspan, p, dt=0.1, adaptive=true)
 
         # Solve the ODE
-        sol = solve(prob, Tsit5())
+        # sol = solve(prob, Tsit5())
+        sol = solve(prob, Tsit5(), saveat=t)
+        # println("sol  at time steps:", sol.t[1:5])
+        # println("sol values:", sol[1:5])
 
-        # # Update the plot data
-        # solplot = PlotData(x=sol.t, y=sol[1], plot=PlotlyBase.PlotType.Line, name="Susceptible")
-        # solplot2 = PlotData(x=sol.t, y=sol[2], plot=PlotlyBase.PlotType.Line, name="Infected")
+        # Update the plot data with both susceptible and infected populations
         solplot = [
-            PlotData(x=sol.t, y=sol[1], plot=PlotlyBase.PlotType.Line, name="Susceptible", mode="lines"),
+            PlotData(x=sol.t, y=sol[1], plot=PlotlyBase.PlotType.Line, name="Susceptible", mode="lines",),
             PlotData(x=sol.t, y=sol[2], plot=PlotlyBase.PlotType.Line, name="Infected", mode="lines")
         ]
-        # Store the results for future access
-        # u_x = sol.t
-        # u_S = sol[1]
-        # u_I = sol[2]
-    end
-end
+        # solplot = [plot(sol, label=["S" "I"], lw=2)]
+    end  
+   
+     
+end  
 
-meta = Dict("og:title" => "Lorenz Chaotic Attractor",
-    "og:description" => "Real-time simulation of a dynamic system with constant UI refresh.",
-    "og:image" => "/preview.jpg")
+meta = Dict(
+    "og:title" => "SIS Model Simulation",
+    "og:description" => "Real-time simulation of an SIS epidemic model with adjustable parameters.",
+    "og:image" => "/preview.jpg"
+)
 
 layout = DEFAULT_LAYOUT(meta=meta)
 @page("/", "app.jl.html", layout)
-end
 
+end 

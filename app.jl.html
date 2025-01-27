@@ -11,47 +11,65 @@
             Where: <span v-katex="{&quot;expression&quot;:&quot;S(t)&quot;}"></span> and <span v-katex="{&quot;expression&quot;:&quot;I(t)&quot;}"></span> are respectively the number of susceptible infected individuals at time <span v-katex="{&quot;expression&quot;:&quot;t&quot;}"></span>, <span v-katex="{&quot;expression&quot;:&quot;\\beta&quot;}"></span> and <span v-katex="{&quot;expression&quot;:&quot;\\gamma&quot;}"></span> respectively the transmission and recovery rate.</p>
     </div>
 </div>
-up()
 
 <div class="container">
     <h1>SI Model Simulation</h1>
-    <p>Adjust the parameters below to simulate the SIS model:</p>
-    <div>
-        <label>Infection Rate (β): </label>
-        <input type="range" min="0.1" max="1.0" step="0.01" v-model="beta">
-        <span>{{ beta }}</span>
-      </div>
-      <div>
-        <label>Recovery Rate (γ): </label>
-        <input type="range" min="0.01" max="1.0" step="0.01" v-model="gamma">
-        <span>{{ gamma }}</span>
-      </div>
-      
+    <div class = row>
+        <div class="st-col col-12 col-sm st-module">
+            <p>Adjust the parameters below to simulate the SI model:</p>
+            <label>Infection Rate (β): </label>
+            <input type="range" min="0.1" max="1.0" step="0.01" v-model="beta">
+            <span>{{ beta }}</span>
+
+            <label>Recovery Rate (γ): </label>
+            <input type="range" min="0.01" max="1.0" step="0.01" v-model="gamma">
+            <span>{{ gamma }}</span>
+            <div>
+                <h2>Simulation Results</h2>
+                <plotly :data="solplot" :layout="solplot_layout" ></plotly>
+            </div>
+          </div>
+          <div class="st-col col-12 col-sm st-module">
+            <p>Adjust the noise noise level to generate simulated data for the parameter estimation:</p>
+            <div>
+                <label>Noise level (σ): </label>
+                <input type="range" min="0.1" max=".9" step="0.1" v-model="noise_level">
+                <span>{{ noise_level }}</span>
+            </div>
+            <div>
+                <plotly :data="data_plot" :layout="data_plot_layout" ></plotly>
+            </div>
+          </div>
+    </div>
+  
     <!-- <div>
         <h2>Simulation Results</h2>
-        <plotly :data="solplot" :layout="layout" :displaylogo="false"></plotly>
-        
-    </div> -->
-    <div>
-        <h2>Simulation Results</h2>
         <plotly :data="solplot" :layout="layout" ></plotly>
-    </div>
+    </div> -->
 </div>
 
 <div class="container">
     <h1>Parameter estimation </h1>
-    <p>Adjust the noise noise level to generate simulated data for the parameter estimation:</p>
+    <!-- <p>Adjust the noise noise level to generate simulated data for the parameter estimation:</p>
     <div>
         <label>Noise level (σ): </label>
-        <input type="range" min="0.1" max="1.0" step="0.1" v-model="noise_level">
+        <input type="range" min="0.1" max=".9" step="0.1" v-model="noise_level">
         <span>{{ noise_level }}</span>
-      </div>
+      </div> -->
       <div>
         <h2>Chain Plot</h2>
-        <plotly :data="chain_plot" :layout="layout" ></plotly>
+        <plotly :data="chain_plot" :layout="chain_plot_layout" ></plotly>
       </div>
-    <div>
-        <h2>Posterior distribution of the parameters </h2>
-        <plotly :data="bayesian_plot" :layout="layout" ></plotly>
+      <h2>Posterior distribution of the parameters </h2>
+    <div class = row>
+        <div class="st-col col-12 col-sm st-module">
+            <plotly :data="bayesian_plot_beta" :layout="bayesian_plot_layout_beta" ></plotly>
+        </div>
+        <div class="st-col col-12 col-sm st-module">
+            <plotly :data="bayesian_plot_gamma" :layout="bayesian_plot_layout_gamma" ></plotly>
+        </div>
     </div>
+</div>
+<div class="footer" style="text-align:center; margin-top:20px; padding:10px; background-color:#f9f9f9; font-size:14px; color:gray;">
+    <p>Created by <strong>Ousmane Junior</strong></p>
 </div>

@@ -22,13 +22,7 @@ Random.seed!(14)
         yaxis_title="Population",
         template="plotly_white"
     )
-    @out data_plot = []
-    @out data_plot_layout = PlotlyBase.Layout(
-        title="Synthetic Data",
-        xaxis_title="Time",
-        yaxis_title="Population",
-        template="plotly_white"
-    )
+    
     @private u0 = [0.99, 0.01]  # Initial conditions for S and I
     @private tspan = (0.0, 100.0)  # Time span for the simulation
     @private t = 0.0:1.0:100.0  # Time points for solution
@@ -59,19 +53,13 @@ Random.seed!(14)
     
     # Bayesian inference results
     @out summary_string = ""  
-    @out bayesian_plot_beta = []  
-    @out bayesian_plot_layout_beta = PlotlyBase.Layout(
-        title="Posterior Distributions of Beta",
-        xaxis_title="Beta",
+    @out bayesian_plot = []  
+    @out bayesian_plot_layout = PlotlyBase.Layout(
+        title="Posterior Distributions",
+        xaxis_title="Parameter Value",
         template="plotly_white",
         yaxis_title="Frequency",
-    )
-    @out bayesian_plot_gamma = []  
-    @out bayesian_plot_layout_gamma = PlotlyBase.Layout(
-        title="Posterior Distribution of Gamma",
-        xaxis_title="Gamma",
-        template="plotly_white",
-        yaxis_title="Frequency",
+        bar_mode="overlay"
     )
     
     # @out summary_stats = DataFrame()
@@ -94,15 +82,9 @@ Random.seed!(14)
 
             # Generate synthetic noisy data
             prob = SIModel.create_SIS_problem(u0, tspan, true_p)
-            noisy_data, sol2 = SIModel.generate_synthetic_data(prob, Tsit5(), t, noise_level)
+            noisy_data = SIModel.generate_synthetic_data(prob, Tsit5(), t, noise_level)
             println("-----------------------------------------------------------------------------")
             println("Noisy data generated: ")
-            data_plot = [
-                PlotlyBase.scatter(x=sol2.t, y=noisy_data[1, :], name="Susceptible (nosiy)", mode="markers", color = "red"),
-                PlotlyBase.scatter(x=sol2.t, y=noisy_data[2, :],name="Infected (nosiy)", mode="markers", color = "blue"),
-                PlotlyBase.scatter(x=sol2.t, y=sol2[1, :], mode="lines", name="Susceptible", color = "red"),
-                PlotlyBase.scatter(x=sol2.t, y=sol2[2, :], mode="lines", name="Infected", color = "blue")
-            ]
         # catch e
         #     println("Error generating synthetic data: ", e)
         # end
@@ -148,17 +130,16 @@ Random.seed!(14)
                         y=posterior_samples[:, i], 
                         mode="lines", 
                         name=string("Chain_", i)
-                    ) for i in 1:3
+                    ) for i in 1:2
                 ]
             catch e
                 println("Error updating chain plot: ", e)
             end
-            bayesian_plot_beta = [
-                PlotlyBase.histogram(x=posterior_samples[:, 1], opacity=0.75, nbinsx=30),
+            bayesian_plot = [
+                PlotlyBase.histogram(x=posterior_samples[:, 1], name="Beta", opacity=0.75, nbinsx=30),
+                PlotlyBase.histogram(x=posterior_samples[:, 2], name="Gamma", opacity=0.75, nbinsx=30)
             ]
-            bayesian_plot_gamma = [ 
-                PlotlyBase.histogram(x=posterior_samples[:, 2], opacity=0.75, nbinsx=30)
-            ]
+            # posterior_samples = Array(chain)
 
             
         catch e

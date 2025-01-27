@@ -58,7 +58,7 @@ function generate_synthetic_data(prob, solver, t, noise_level)
     noisy_d = Array(sol) + noise_level * randn(size(Array(sol)))
 
     # println("Synthetic data generated ", noisy_d[1, :])
-    return noisy_d
+    return noisy_d, sol
 end
 
 # @model function fitsi(data, prob)

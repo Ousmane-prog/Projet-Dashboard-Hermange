@@ -28,15 +28,15 @@ end
 # Function to create an ODE problem for the SIS model
 function create_SIS_problem(N0, tspan, p)
     try
-        println("Creating ODEProblem with initial conditions: ", N0)
-        println("Time span: ", tspan)
-        println("Parameters: ", p)
+        # println("Creating ODEProblem with initial conditions: ", N0)
+        # println("Time span: ", tspan)
+        # println("Parameters: ", p)
 
         # Create the ODEProblem
         prob = ODEProblem(SIS!, N0, tspan, p)
 
         # Check the created problem object
-        println("ODEProblem created: ", prob)
+        # println("ODEProblem created: ", prob)
         
         # Ensure that the prob is not nothing
         if prob === nothing
@@ -55,24 +55,46 @@ end
 # Function to generate synthetic data by solving the ODE and adding noise
 function generate_synthetic_data(prob, solver, t, noise_level)
     sol = solve(prob, solver, saveat=t)
-    println("Synthetic data generated ", sol[1, :])
-    return Array(sol) + noise_level * randn(size(Array(sol)))
+    noisy_d = Array(sol) + noise_level * randn(size(Array(sol)))
+
+    # println("Synthetic data generated ", noisy_d[1, :])
+    return noisy_d
 end
 
-@model function fitsi(data, prob, t)
-    # Priors for parameters
+# @model function fitsi(data, prob)
+#     # Priors for parameters
+#     beta ~ Uniform(0, 10)
+#     gamma ~ Uniform(0, 10)
+
+#     # Solve the ODE with sampled parameters
+#     p = [beta, gamma]
+#     predicted = solve(prob, Tsit5(), p=p, saveat=0.1)
+#     println("----------------------------------------------------")
+#     println("Predicted: ", predicted)
+#     predicted_array = Array(predicted)
+
+#     # Likelihood
+#     for i in 1:size(data, 2)
+#         data[:, i] ~ MvNormal(predicted_array[:, i], 0.4)
+#     end
+# end
+@model function fitsi(data, prob)
     beta ~ Uniform(0, 10)
     gamma ~ Uniform(0, 10)
-
-    # Solve the ODE with sampled parameters
+    
     p = [beta, gamma]
+    println("----------------------------------------------------")
+    println("Parameters: ", p)
     predicted = solve(prob, Tsit5(), p=p, saveat=0.1)
-    predicted_array = Array(predicted)
+    println("\n***********************Prediction done successfully*******************\n: ")
 
-    # Likelihood
-    for i in 1:size(data, 2)
-        data[:, i] ~ MvNormal(predicted_array[:, i], 0.4)
+    # for i in eachindex(data, 2)  # Loop over the second dimension (time points)
+    #     data[:, i] ~ MvNormal(predicted[:, i], 0.4)
+    # end
+    for i in 1:size(data, 2)  # Loop over time points
+        data[:, i] ~ MvNormal(predicted[:, i], 0.4)
     end
 end
-end 
 
+
+end

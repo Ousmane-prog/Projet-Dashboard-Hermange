@@ -8,7 +8,7 @@ Random.seed!(14)
 @genietools
 
 @app begin
-    
+    @out isLoading = false
     # Define reactive variables for the SIS model
     @in beta = 0.52
     @in gamma = 0.24
@@ -85,7 +85,10 @@ Random.seed!(14)
     # Perform Bayesian inference when noise_level changes
     @onchange noise_level begin
         try
-           
+
+            isLoading = true
+            global noisy_data, sol2, prob
+
             prob = SIModel.create_SIS_problem(u0, tspan, true_p)
             noisy_data, sol2 = SIModel.generate_synthetic_data(prob, Tsit5(), t, noise_level)
             # println("-----------------------------------------------------------------------------")
@@ -110,11 +113,11 @@ Random.seed!(14)
             # model = SIModel.fitsi(SIModel.generate_synthetic_data(SIModel.create_SIS_problem(u0, tspan, true_p), Tsit5(), t, noise_level), SIModel.create_SIS_problem(u0, tspan, true_p))
         try
             
-            global chain = sample(model, NUTS(), MCMCThreads(), 100, 3; progress=false)
+            global chain = sample(model, NUTS(), MCMCSerial(), 1000, 3; progress=false)
             if isempty(chain)
                 println("Empty chain returned.")
             end
-            
+            println("type of chain is ", typeof(chain))
         catch e
             println("Error during sampling: ", e)
         end
@@ -179,7 +182,10 @@ Random.seed!(14)
             
         catch e
             println("Error during Bayesian inference: ", e)
+        finally
+            isLoading = false
         end
+
     end
 end  
 
@@ -190,6 +196,6 @@ meta = Dict(
 )
 
 layout = DEFAULT_LAYOUT(meta=meta)
-@page("/", "app.jl.html", layout; core_theme=false)
+@page("/", "app.jl.html", layout; core_theme=true)
 
 end

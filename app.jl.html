@@ -41,25 +41,69 @@
             </div>
           </div>
     </div>
-  
-    <!-- <div>
-        <h2>Simulation Results</h2>
-        <plotly :data="solplot" :layout="layout" ></plotly>
-    </div> -->
 </div>
 
 <div class="container">
-    <h1>Parameter estimation </h1>
-    <!-- <p>Adjust the noise noise level to generate simulated data for the parameter estimation:</p>
-    <div>
-        <label>Noise level (σ): </label>
-        <input type="range" min="0.1" max=".9" step="0.1" v-model="noise_level">
-        <span>{{ noise_level }}</span>
-      </div> -->
-      <div>
+    <h1 >Parameter estimation </h1>
+    <div class="row">
+        <h2> Summary Statistics</h2>
+    </div>
+    <div class = row>
+        
+        <div class="st-col col-12 col-sm st-module">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th style="text-align: center;">Parameters</th>
+                        <th style="text-align: center;">True</th>
+                        <th style="text-align: center;">Mean</th>
+                        <th style="text-align: center;">Std</th>
+                        <th style="text-align: center;">mcse</th>
+                        <th style="text-align: center;">ess_bulk</th>
+                        <th style="text-align: center;">ess_tail</th>
+                        <!-- <th style="text-align: center;"> rhat</th> -->
+
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="text-align: center;">beta</td>
+                        <td style="text-align: center;">0.52</td>
+                        <td style="text-align: center;">{{ beta_mean }}</td>
+                        <td style="text-align: center;">{{ beta_std }}</td>
+                        <td style="text-align: center;">{{ beta_mcse }}</td>
+                        <td style="text-align: center;">{{ beta_ess_bulk }}</td>
+                        <td style="text-align: center;">{{beta_ess_tail}}</td>
+                        <!-- <td style="text-align: center;">{{beta_rath}}</td> -->
+
+                    </tr>
+                    <tr>
+                        <td style="text-align: center;">gamma</td>
+                        <td style="text-align: center;">{{ 0.24 }}</td>
+                        <td style="text-align: center;">{{ gamma_mean }}</td>
+                        <td style="text-align: center;">{{ gamma_std }}</td>
+                        <td style="text-align: center;">{{ gamma_mcse }}</td>
+                        <td style="text-align: center;">{{gamma_ess_bulk}}</td>
+                        <td style="text-align: center;">{{gamma_ess_tail}}</td>
+                        <!-- <td style="text-align: center;">{{gamma_rhat}}</td> -->
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+</div>
+<div class="container">
+    <div class="row">
         <h2>Chain Plot</h2>
-        <plotly :data="chain_plot" :layout="chain_plot_layout" ></plotly>
-      </div>
+    </div>
+    <div class="row">
+        <div class="st-col col-12 col-sm st-module">
+            
+            <plotly :data="chain_plot" :layout="chain_plot_layout" ></plotly>
+        </div>
+    </div>
+</div>
+<div class="container">
       <h2>Posterior distribution of the parameters </h2>
     <div class = row>
         <div class="st-col col-12 col-sm st-module">
@@ -70,6 +114,7 @@
         </div>
     </div>
 </div>
+
 <div class="footer" style="text-align:center; margin-top:20px; padding:10px; background-color:#f9f9f9; font-size:14px; color:gray;">
     <p>Created by <strong>Ousmane Junior</strong></p>
 </div>

@@ -62,8 +62,6 @@ Random.seed!(14)
         bar_mode="overlay"
     )
     
-    # @out summary_stats = DataFrame()
-    # @out chain_summary = DataFrame()
     @out chain_plot = []
     @out chain_plot = []  
     @out chain_plot_layout = PlotlyBase.Layout(
@@ -85,11 +83,7 @@ Random.seed!(14)
             noisy_data = SIModel.generate_synthetic_data(prob, Tsit5(), t, noise_level)
             println("-----------------------------------------------------------------------------")
             println("Noisy data generated: ")
-        # catch e
-        #     println("Error generating synthetic data: ", e)
-        # end
-        # try
-            # Perform Bayesian inference
+        
             try
                 # println("Creating model with noisy_data and prob...")
                 global model
@@ -99,48 +93,49 @@ Random.seed!(14)
                 println("Error during model creation: ", e, " | Inputs: noisy_data: ", noisy_data, " | prob: ", prob)
             end
             
-            # model = SIModel.fitsi(SIModel.generate_synthetic_data(SIModel.create_SIS_problem(u0, tspan, true_p), Tsit5(), t, noise_level), SIModel.create_SIS_problem(u0, tspan, true_p))
+            
             try
-                # println("Accepting the model...")
-                # println("Model details: ", model)
+
                 global chain
                 chain = sample(model, NUTS(), MCMCThreads(), 500, 3; progress=false)
-                println("Sampling completed successfully.")
+                # println("Sampling completed successfully.")
+                
+                if isempty(chain)
+                    println("Empty chain returned.")
+                    return 
+                end
             catch e
                 println("Error during sampling: ", e)
             end
-            global posterior_samples
-            posterior_samples = Array(chain)
+            
         
             # Summarize results
-            global chain_summary
-            chain_summary = describe(chain)
-            posterior_samples = Array(chain)
-            # beta_summary = chain_summary["beta", :]
-            # gamma_summary = chain_summary["gamma", :]
-
-            # chain plot
             try
-                # Assuming `chain` has been sampled successfully:
-                global iter_count
-                iter_count = size(posterior_samples, 1)
-                chain_plot = [
-                    PlotlyBase.scatter(
-                        x=1:iter_count, 
-                        y=posterior_samples[:, i], 
-                        mode="lines", 
-                        name=string("Chain_", i)
-                    ) for i in 1:2
+                global posterior_samples = Array(chain)
+    
+                try
+                    # Assuming `chain` has been sampled successfully:
+                    global iter_count
+                    iter_count = size(posterior_samples, 1)
+                    chain_plot = [
+                        PlotlyBase.scatter(
+                            x=1:iter_count, 
+                            y=posterior_samples[:, i], 
+                            mode="lines", 
+                            name=string("Chain_", i)
+                        ) for i in 1:2
+                    ]
+                catch e
+                        println("Error updating chain plot: ", e)
+                end
+                bayesian_plot = [
+                    PlotlyBase.histogram(x=posterior_samples[:, 1], name="Beta", opacity=0.75, nbinsx=30),
+                    PlotlyBase.histogram(x=posterior_samples[:, 2], name="Gamma", opacity=0.75, nbinsx=30)
                 ]
+                
             catch e
-                println("Error updating chain plot: ", e)
+                println("posterior sample error", e)
             end
-            bayesian_plot = [
-                PlotlyBase.histogram(x=posterior_samples[:, 1], name="Beta", opacity=0.75, nbinsx=30),
-                PlotlyBase.histogram(x=posterior_samples[:, 2], name="Gamma", opacity=0.75, nbinsx=30)
-            ]
-            # posterior_samples = Array(chain)
-
             
         catch e
             println("Error during Bayesian inference: ", e)

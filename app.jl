@@ -1,7 +1,7 @@
 module App
 
 include("lib/SIModel.jl")  # Include the file with your SIS model implementation
-using Turing, MCMCChains, GenieFramework, DifferentialEquations, PlotlyBase, StippleLatex, StatsPlots, Random
+using Turing, MCMCChains, GenieFramework, DifferentialEquations, PlotlyBase, StippleLatex, StatsPlots, Random, PrettyTables, DataFrames
 using .SIModel
 Random.seed!(14)
 
@@ -29,7 +29,7 @@ Random.seed!(14)
         yaxis_title="Population",
         template="plotly_white"
     )
-    @private u0 = [0.99, 0.01]  # Initial conditions for S and I
+    @private u0 = [0.99, 0.01]  # Initial conditions for S and Iusing Pkg
     @private tspan = (0.0, 100.0)  # Time span for the simulation
     @private t = 0.0:1.0:100.0  # Time points for solution
     @private true_p = [0.52, 0.24]
@@ -74,9 +74,7 @@ Random.seed!(14)
         yaxis_title="Frequency",
     )
     
-    # @out summary_stats = DataFrame()
-    # @out chain_summary = DataFrame()
-    @out chain_plot = []
+    
     @out chain_plot = []  
     @out chain_plot_layout = PlotlyBase.Layout(
         title="Trace Plots of Parameters",
@@ -87,79 +85,97 @@ Random.seed!(14)
     # Perform Bayesian inference when noise_level changes
     @onchange noise_level begin
         try
-            # Validate noise level
-            if noise_level < 0 || noise_level > 1
-                error("Noise level must be between 0 and 1.")
-            end
-
-            # Generate synthetic noisy data
+           
             prob = SIModel.create_SIS_problem(u0, tspan, true_p)
             noisy_data, sol2 = SIModel.generate_synthetic_data(prob, Tsit5(), t, noise_level)
-            println("-----------------------------------------------------------------------------")
-            println("Noisy data generated: ")
+            # println("-----------------------------------------------------------------------------")
+            # println("Noisy data generated: ")
             data_plot = [
                 PlotlyBase.scatter(x=sol2.t, y=noisy_data[1, :], name="Susceptible (nosiy)", mode="markers", color = "red"),
                 PlotlyBase.scatter(x=sol2.t, y=noisy_data[2, :],name="Infected (nosiy)", mode="markers", color = "blue"),
                 PlotlyBase.scatter(x=sol2.t, y=sol2[1, :], mode="lines", name="Susceptible", color = "red"),
                 PlotlyBase.scatter(x=sol2.t, y=sol2[2, :], mode="lines", name="Infected", color = "blue")
             ]
-        # catch e
-        #     println("Error generating synthetic data: ", e)
-        # end
-        # try
-            # Perform Bayesian inference
-            try
-                # println("Creating model with noisy_data and prob...")
-                global model
-                model = SIModel.fitsi(noisy_data, prob)
-                # println("Model created successfully: ", model)
-            catch e
-                println("Error during model creation: ", e, " | Inputs: noisy_data: ", noisy_data, " | prob: ", prob)
-            end
+        catch e
+            println("Error generating synthetic data: ", e)
+
+        end
+
+        try
+            global model = SIModel.fitsi(noisy_data, prob)
+        catch e
+            println("Error during model creation: ", e, " | Inputs: noisy_data: ", noisy_data, " | prob: ", prob)
+        end
             
             # model = SIModel.fitsi(SIModel.generate_synthetic_data(SIModel.create_SIS_problem(u0, tspan, true_p), Tsit5(), t, noise_level), SIModel.create_SIS_problem(u0, tspan, true_p))
-            try
-                # println("Accepting the model...")
-                # println("Model details: ", model)
-                global chain
-                chain = sample(model, NUTS(), MCMCThreads(), 500, 3; progress=false)
-                println("Sampling completed successfully.")
-            catch e
-                println("Error during sampling: ", e)
+        try
+            
+            global chain = sample(model, NUTS(), MCMCThreads(), 100, 3; progress=false)
+            if isempty(chain)
+                println("Empty chain returned.")
             end
-            global posterior_samples
-            posterior_samples = Array(chain)
+            
+        catch e
+            println("Error during sampling: ", e)
+        end
+
+        try
+            
+            global beta_mean
+            global gamma_mean
+            global beta_std
+            global gamma_std
+            global beta_mcse
+            global gamma_mcse
+            global beta_ess_bulk
+            global gamma_ess_bulk
+            global beta_ess_tail
+            global gamma_ess_tail
+            
+
+            beta_mean = round(mean(chain[:beta]), digits=2)
+            gamma_mean = round(mean(chain[:gamma]), digits=2)
+            beta_std = round(std(chain[:beta]), digits=2)
+            gamma_std = round(std(chain[:gamma]), digits=2)
+            beta_mcse = round(mcse(chain[:beta]), digits=2)
+            gamma_mcse = round(mcse(chain[:gamma]), digits=2)
+            beta_ess_bulk = round(ess(chain[:beta], mode=:bulk), digits=2)
+            gamma_ess_bulk = round(ess(chain[:gamma], mode=:bulk), digits=2)
+            beta_ess_tail = round(ess(chain[:beta], mode=:tail), digits=2)
+            gamma_ess_tail = round(ess(chain[:gamma], mode=:tail), digits=2)
+
+        catch e
+            println("Error during summary statistics: ", e)
+        end
+
+        try
+            global posterior_samples = Array(chain)
         
-            # Summarize results
-            global chain_summary
-            chain_summary = describe(chain)
-            posterior_samples = Array(chain)
-            # beta_summary = chain_summary["beta", :]
-            # gamma_summary = chain_summary["gamma", :]
+            # beta_rhat = round(rhat(chain[:beta]), digits=2)
+            # gamma_rhat = round(rhat(chain[:gamma]), digits=2)
 
             # chain plot
-            try
-                # Assuming `chain` has been sampled successfully:
-                global iter_count
-                iter_count = size(posterior_samples, 1)
-                chain_plot = [
-                    PlotlyBase.scatter(
-                        x=1:iter_count, 
-                        y=posterior_samples[:, i], 
-                        mode="lines", 
-                        name=string("Chain_", i)
-                    ) for i in 1:3
-                ]
-            catch e
-                println("Error updating chain plot: ", e)
-            end
+            # try
+            #     # Assuming `chain` has been sampled successfully:
+            #     global iter_count
+            #     iter_count = size(posterior_samples, 1)
+            #     chain_plot = [
+            #         PlotlyBase.scatter(
+            #             x=1:iter_count, 
+            #             y=posterior_samples[:, i], 
+            #             mode="lines", 
+            #             name=string("Chain_", i)
+            #         ) for i in 1:3
+            #     ]
+            # catch e
+            #     println("Error updating chain plot: ", e)
+            # end
             bayesian_plot_beta = [
                 PlotlyBase.histogram(x=posterior_samples[:, 1], opacity=0.75, nbinsx=30),
             ]
             bayesian_plot_gamma = [ 
                 PlotlyBase.histogram(x=posterior_samples[:, 2], opacity=0.75, nbinsx=30)
             ]
-
             
         catch e
             println("Error during Bayesian inference: ", e)
@@ -174,6 +190,6 @@ meta = Dict(
 )
 
 layout = DEFAULT_LAYOUT(meta=meta)
-@page("/", "app.jl.html", layout)
+@page("/", "app.jl.html", layout; core_theme=false)
 
 end

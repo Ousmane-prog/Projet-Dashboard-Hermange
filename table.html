@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<meta charset="UTF-8">
+<head>
+<style>
+  table, td, th {
+      border-collapse: collapse;
+      font-family: sans-serif;
+  }
+
+  td, th {
+      border-bottom: 0;
+      padding: 4px
+  }
+
+  tr:nth-child(odd) {
+      background: #eee;
+  }
+
+  tr:nth-child(even) {
+      background: #fff;
+  }
+
+  tr.header {
+      background: navy !important;
+      color: white;
+      font-weight: bold;
+  }
+
+  tr.subheader {
+      background: lightgray !important;
+      color: black;
+  }
+
+  tr.headerLastRow {
+      border-bottom: 2px solid black;
+  }
+
+  th.rowNumber, td.rowNumber {
+      text-align: right;
+  }
+
+</style>
+</head>
+<body>
+<table>
+  <thead>
+    <tr class = "header">
+      <th style = "text-align: right;">parameters</th>
+      <th style = "text-align: right;">mean</th>
+      <th style = "text-align: right;">std</th>
+      <th style = "text-align: right;">mcse</th>
+      <th style = "text-align: right;">ess_bulk</th>
+      <th style = "text-align: right;">ess_tail</th>
+      <th style = "text-align: right;">rhat</th>
+      <th style = "text-align: right;">ess_per_sec</th>
+    </tr>
+    <tr class = "subheader headerLastRow">
+      <th style = "text-align: right;">Symbol</th>
+      <th style = "text-align: right;">Float64</th>
+      <th style = "text-align: right;">Float64</th>
+      <th style = "text-align: right;">Float64</th>
+      <th style = "text-align: right;">Float64</th>
+      <th style = "text-align: right;">Float64</th>
+      <th style = "text-align: right;">Float64</th>
+      <th style = "text-align: right;">Float64</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style = "text-align: right;">beta</td>
+      <td style = "text-align: right;">7.93812</td>
+      <td style = "text-align: right;">1.54836</td>
+      <td style = "text-align: right;">0.225335</td>
+      <td style = "text-align: right;">50.9097</td>
+      <td style = "text-align: right;">41.4154</td>
+      <td style = "text-align: right;">1.02516</td>
+      <td style = "text-align: right;">9.31217</td>
+    </tr>
+    <tr>
+      <td style = "text-align: right;">gamma</td>
+      <td style = "text-align: right;">3.00138</td>
+      <td style = "text-align: right;">0.660188</td>
+      <td style = "text-align: right;">0.0972564</td>
+      <td style = "text-align: right;">49.9071</td>
+      <td style = "text-align: right;">48.2139</td>
+      <td style = "text-align: right;">1.02061</td>
+      <td style = "text-align: right;">9.1288</td>
+    </tr>
+  </tbody>
+</table>
+</body>
+</html>

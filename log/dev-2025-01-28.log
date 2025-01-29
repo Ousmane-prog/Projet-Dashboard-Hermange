@@ -1,0 +1,41 @@
+┌ Info: 2025-01-28 08:09:54 Watching ["D:\\HEC\\Genie App\\Projet Hermange"]
+└ @ GenieAutoReload C:\Users\ousma\.julia\packages\GenieAutoReload\qpImd\src\GenieAutoReload.jl:19
+┌ Info: 2025-01-28 08:09:59 Autoreloading
+└ @ GenieAutoReload C:\Users\ousma\.julia\packages\GenieAutoReload\qpImd\src\GenieAutoReload.jl:22
+┌ Info: 2025-01-28 08:13:50 
+│ Web Server starting at http://127.0.0.1:8000 
+└ @ Genie.Server C:\Users\ousma\.julia\packages\Genie\TKJWe\src\Server.jl:182
+┌ Info: 2025-01-28 08:13:51 Listening on: 127.0.0.1:8000, thread id: 1
+└ @ HTTP.Servers C:\Users\ousma\.julia\packages\HTTP\4AUPl\src\Servers.jl:382
+┌ Warning: 2025-01-28 08:14:23 UndefVarError(:plotly, Main.App)
+└ @ Genie.Renderer.Html C:\Users\ousma\.julia\packages\Genie\TKJWe\src\renderers\Html.jl:140
+┌ Warning: 2025-01-28 08:14:24 UndefVarError(:plotly, Main.App)
+└ @ Genie.Renderer.Html C:\Users\ousma\.julia\packages\Genie\TKJWe\src\renderers\Html.jl:140
+┌ Warning: 2025-01-28 08:14:24 UndefVarError(:plotly, Main.App)
+└ @ Genie.Renderer.Html C:\Users\ousma\.julia\packages\Genie\TKJWe\src\renderers\Html.jl:140
+┌ Warning: 2025-01-28 08:14:24 UndefVarError(:plotly, Main.App)
+└ @ Genie.Renderer.Html C:\Users\ousma\.julia\packages\Genie\TKJWe\src\renderers\Html.jl:140
+┌ Warning: 2025-01-28 08:14:24 UndefVarError(:plotly, Main.App)
+└ @ Genie.Renderer.Html C:\Users\ousma\.julia\packages\Genie\TKJWe\src\renderers\Html.jl:140
+┌ Warning: 2025-01-28 08:15:26 Only a single thread available: MCMC chains are not sampled in parallel
+└ @ AbstractMCMC C:\Users\ousma\.julia\packages\AbstractMCMC\FSyVk\src\sample.jl:382
+┌ Info: 2025-01-28 08:15:52 Found initial step size
+│   ϵ = 1.6
+└ @ Turing.Inference C:\Users\ousma\.julia\packages\Turing\oFGEb\src\mcmc\hmc.jl:213
+┌ Info: 2025-01-28 08:16:42 Found initial step size
+│   ϵ = 0.05
+└ @ Turing.Inference C:\Users\ousma\.julia\packages\Turing\oFGEb\src\mcmc\hmc.jl:213
+┌ Info: 2025-01-28 08:17:19 Found initial step size
+│   ϵ = 3.2
+└ @ Turing.Inference C:\Users\ousma\.julia\packages\Turing\oFGEb\src\mcmc\hmc.jl:213
+┌ Warning: 2025-01-28 08:52:08 Only a single thread available: MCMC chains are not sampled in parallel
+└ @ AbstractMCMC C:\Users\ousma\.julia\packages\AbstractMCMC\FSyVk\src\sample.jl:382
+┌ Info: 2025-01-28 08:52:09 Found initial step size
+│   ϵ = 1.6125
+└ @ Turing.Inference C:\Users\ousma\.julia\packages\Turing\oFGEb\src\mcmc\hmc.jl:213
+┌ Info: 2025-01-28 08:53:03 Found initial step size
+│   ϵ = 0.8
+└ @ Turing.Inference C:\Users\ousma\.julia\packages\Turing\oFGEb\src\mcmc\hmc.jl:213
+┌ Info: 2025-01-28 08:53:40 Found initial step size
+│   ϵ = 0.2
+└ @ Turing.Inference C:\Users\ousma\.julia\packages\Turing\oFGEb\src\mcmc\hmc.jl:213

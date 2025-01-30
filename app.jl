@@ -113,7 +113,7 @@ Random.seed!(14)
             # model = SIModel.fitsi(SIModel.generate_synthetic_data(SIModel.create_SIS_problem(u0, tspan, true_p), Tsit5(), t, noise_level), SIModel.create_SIS_problem(u0, tspan, true_p))
         try
             
-            global chain = sample(model, NUTS(), MCMCSerial(), 1000, 3; progress=false)
+            global chain = sample(model, NUTS(), MCMCSerial(), 100, 3; progress=false)
             if isempty(chain)
                 println("Empty chain returned.")
             end
@@ -138,14 +138,14 @@ Random.seed!(14)
 
             beta_mean = round(mean(chain[:beta]), digits=2)
             gamma_mean = round(mean(chain[:gamma]), digits=2)
-            beta_std = round(std(chain[:beta]), digits=2)
-            gamma_std = round(std(chain[:gamma]), digits=2)
-            beta_mcse = round(mcse(chain[:beta]), digits=2)
-            gamma_mcse = round(mcse(chain[:gamma]), digits=2)
-            beta_ess_bulk = round(ess(chain[:beta], mode=:bulk), digits=2)
-            gamma_ess_bulk = round(ess(chain[:gamma], mode=:bulk), digits=2)
-            beta_ess_tail = round(ess(chain[:beta], mode=:tail), digits=2)
-            gamma_ess_tail = round(ess(chain[:gamma], mode=:tail), digits=2)
+            # beta_std = round(std(chain[:beta]), digits=2)
+            # gamma_std = round(std(chain[:gamma]), digits=2)
+            # beta_mcse = round(mcse(chain[:beta]), digits=2)
+            # gamma_mcse = round(mcse(chain[:gamma]), digits=2)
+            # beta_ess_bulk = round(ess(chain[:beta], mode=:bulk), digits=2)
+            # gamma_ess_bulk = round(ess(chain[:gamma], mode=:bulk), digits=2)
+            # beta_ess_tail = round(ess(chain[:beta], mode=:tail), digits=2)
+            # gamma_ess_tail = round(ess(chain[:gamma], mode=:tail), digits=2)
 
         catch e
             println("Error during summary statistics: ", e)
@@ -196,6 +196,6 @@ meta = Dict(
 )
 
 layout = DEFAULT_LAYOUT(meta=meta)
-@page("/", "app.jl.html", layout; core_theme=true)
+@page("/", "app.jl.html", layout)
 
 end

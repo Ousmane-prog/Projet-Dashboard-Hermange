@@ -1,18 +1,17 @@
 module App
 
-include("lib/SIModel.jl")  # Include the file with your SIS model implementation
-using Turing, MCMCChains, GenieFramework, DifferentialEquations, PlotlyBase, StippleLatex, StatsPlots, Random, PrettyTables, DataFrames
+include("lib/SIModel.jl")  
+using Turing, MCMCChains, GenieFramework, DifferentialEquations, PlotlyBase, StippleLatex, StatsPlots, Random
 using .SIModel
 Random.seed!(14)
 
 @genietools
 
 @app begin
-    @out isLoading = false
-    # Define reactive variables for the SIS model
+    # Define reactive variables 
     @in beta = 0.52
     @in gamma = 0.24
-    @in noise_level = 0.3  # Noise level for synthetic data
+    @in noise_level = 0.3  
 
     # Plot for ODE solutions
     @out solplot = []  
@@ -29,19 +28,26 @@ Random.seed!(14)
         yaxis_title="Population",
         template="plotly_white"
     )
-    @private u0 = [0.99, 0.01]  # Initial conditions for S and Iusing Pkg
-    @private tspan = (0.0, 100.0)  # Time span for the simulation
+    @out beta_mean = 0.0
+    @out gamma_mean = 0.0
+    @out beta_std = 0.0
+    @out gamma_std = 0.0
+    @out beta_mcse = 0.0
+    @out gamma_mcse = 0.0
+    @out beta_ess_bulk = 0.0
+    @out gamma_ess_bulk = 0.0
+    @out beta_ess_tail = 0.0
+    @out gamma_ess_tail = 0.0
+    # @out summary_stats = 0
+
+    @private u0 = [0.99, 0.01]  
+    @private tspan = (0.0, 100.0)  
     @private t = 0.0:1.0:100.0  # Time points for solution
     @private true_p = [0.52, 0.24]
 
-    # React to changes in beta and gamma
+    # ode visualization
     @onchange beta, gamma begin
         try
-            # Validate parameters
-            if beta <= 0 || gamma <= 0
-                error("Beta and Gamma must be positive.")
-            end
-
             # Solve the ODE problem
             p = [beta, gamma]
             prob = ODEProblem(SIModel.SIS!, u0, tspan, p)
@@ -58,7 +64,6 @@ Random.seed!(14)
     end  
     
     # Bayesian inference results
-    @out summary_string = ""  
     @out bayesian_plot_beta = []  
     @out bayesian_plot_layout_beta = PlotlyBase.Layout(
         title="Posterior Distributions of Beta",
@@ -86,7 +91,7 @@ Random.seed!(14)
     @onchange noise_level begin
         try
 
-            isLoading = true
+            # isLoading = true
             global noisy_data, sol2, prob
 
             prob = SIModel.create_SIS_problem(u0, tspan, true_p)
@@ -105,41 +110,27 @@ Random.seed!(14)
         end
 
         try
-            global model = SIModel.fitsi(noisy_data, prob)
+            global model
+            model = SIModel.fitsi(noisy_data, prob)
         catch e
             println("Error during model creation: ", e, " | Inputs: noisy_data: ", noisy_data, " | prob: ", prob)
         end
             
             # model = SIModel.fitsi(SIModel.generate_synthetic_data(SIModel.create_SIS_problem(u0, tspan, true_p), Tsit5(), t, noise_level), SIModel.create_SIS_problem(u0, tspan, true_p))
         try
-            
-            global chain = sample(model, NUTS(), MCMCSerial(), 100, 3; progress=false)
-            if isempty(chain)
-                println("Empty chain returned.")
-            end
-            println("type of chain is ", typeof(chain))
+            println("Starting Bayesian inference...")
+            global chain = sample(model, NUTS(), MCMCThreads(), 1000, 3; progress=false)
+            println("Sampling complete. Chain: ", typeof(chain))
         catch e
             println("Error during sampling: ", e)
         end
 
-        try
-            
-            global beta_mean
-            global gamma_mean
-            global beta_std
-            global gamma_std
-            global beta_mcse
-            global gamma_mcse
-            global beta_ess_bulk
-            global gamma_ess_bulk
-            global beta_ess_tail
-            global gamma_ess_tail
-            
-
+        try        
+            # summary_stats, _ = describe(chain)
             beta_mean = round(mean(chain[:beta]), digits=2)
             gamma_mean = round(mean(chain[:gamma]), digits=2)
-            # beta_std = round(std(chain[:beta]), digits=2)
-            # gamma_std = round(std(chain[:gamma]), digits=2)
+            beta_std = round(std(chain[:beta]), digits=2)
+            gamma_std = round(std(chain[:gamma]), digits=2)
             # beta_mcse = round(mcse(chain[:beta]), digits=2)
             # gamma_mcse = round(mcse(chain[:gamma]), digits=2)
             # beta_ess_bulk = round(ess(chain[:beta], mode=:bulk), digits=2)
@@ -153,9 +144,6 @@ Random.seed!(14)
 
         try
             global posterior_samples = Array(chain)
-        
-            # beta_rhat = round(rhat(chain[:beta]), digits=2)
-            # gamma_rhat = round(rhat(chain[:gamma]), digits=2)
 
             # chain plot
             # try
@@ -183,7 +171,7 @@ Random.seed!(14)
         catch e
             println("Error during Bayesian inference: ", e)
         finally
-            isLoading = false
+            # isLoading = false
         end
 
     end

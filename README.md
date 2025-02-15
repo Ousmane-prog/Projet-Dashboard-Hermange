@@ -21,3 +21,9 @@ The app allows users to:
 - **GenieFramework** for web-based interactivity.
 - **Markov Chain Monte Carlo (MCMC)** for Bayesian inference.
 - **Plotly.js** for visualization.
+
+## Preview
+![capture](https://github.com/user-attachments/assets/8c6a8a32-2eda-46ad-bf67-4a6dd93dc7fd)
+
+## ✍️  Author
+**SANE Ousmane Junior**

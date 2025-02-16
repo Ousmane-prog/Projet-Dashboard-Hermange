@@ -1,13 +1,13 @@
-# SI Model Simulation and Parameter Estimation App
+# Bayesian Parameter Estimation and model simmulation for ODE Systems: Application to the SI Model
 
 ## 📌 Description
-This web-based application simulates the **Susceptible-Infected (SI) model** and performs **Bayesian parameter estimation** using **Genie.jl** and **Turing.jl**.  
+This web application simulates the **Susceptible-Infected** (SI) model and performs **Bayesian parameter estimation** using the **Turing.jl** package. 
 The app allows users to:
 - Adjust **epidemic model parameters** interactively.
-- Visualize **ODE solutions** for the SI model.
-- Generate **synthetic data** with noise.
+- Visualize the trajectories of the **ODE solutions** to observe epidemic dynamics.
+- Generate **synthetic data** with noise for the model calibration.
 - Perform **Bayesian inference** using Markov Chain Monte Carlo (MCMC).
-- View **posterior distributions** and summary statistics.
+- View **posterior distributions** and **summary statistics** of the estimated parameters.
 
 ## 🚀 Features
 - 🏃 **Real-time ODE simulation** with adjustable `β` (infection rate) and `γ` (recovery rate).
@@ -19,7 +19,7 @@ The app allows users to:
 ## 🛠️ Technologies Used
 - **Julia** (Genie.jl, Turing.jl, DifferentialEquations.jl, PlotlyBase.jl, StatsPlots.jl)
 - **GenieFramework** for web-based interactivity.
-- **Markov Chain Monte Carlo (MCMC)** for Bayesian inference.
+- **Turing package** for Bayesian inference.
 - **Plotly.js** for visualization.
 
 ## Preview

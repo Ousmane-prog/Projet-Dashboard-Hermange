@@ -1,0 +1,25 @@
+# Development configuration for SI Model Dashboard
+
+[server]
+host = "127.0.0.1"
+port = 8000
+protocol = "http"
+
+[genie]
+log_level = "debug"
+log_router = true
+assets_path = "public"
+views_path = "views"
+cache = false
+reload = true  # Hot reload on development
+
+[app]
+debug = true
+environment = "development"
+session_storage = "file"
+session_timeout = 86400  # 24 hours for development
+
+[security]
+enable_cors = true
+cors_origin = "*"
+secure_cookies = false  # Allow non-HTTPS in development

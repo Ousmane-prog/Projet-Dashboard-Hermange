@@ -1,0 +1,43 @@
+# Production configuration for SI Model Dashboard
+# This file contains environment-specific settings for production deployment
+
+[server]
+# Server host and port
+host = "0.0.0.0"
+port = 8000
+protocol = "http"
+
+[genie]
+# Genie framework settings
+log_level = "warn"
+log_router = true
+assets_path = "public"
+views_path = "views"
+
+# Production should use compiled assets and enable caching
+cache = true
+minify_json = true
+minify_html = true
+
+[app]
+# Application-specific settings
+debug = false
+environment = "production"
+
+# Session configuration
+session_storage = "file"  # Use file-based sessions
+session_timeout = 3600   # 1 hour in seconds
+
+[database]
+# If you add database support later
+# host = "localhost"
+# port = 5432
+# name = "si_model_prod"
+
+[security]
+# Security headers
+enable_cors = true
+cors_origin = "*"  # Configure for your domain in production
+secure_cookies = true
+httponly_cookies = true
+samesite = "Lax"  # Can be "Strict", "Lax", or "None"

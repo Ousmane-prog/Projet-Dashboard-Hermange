@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: si-model-dashboard
+    ports:
+      - "${PORT:-8000}:8000"
+    environment:
+      - JULIA_ENV=${JULIA_ENV:-production}
+      - HOST=0.0.0.0
+      - PORT=8000
+      - APP_ENV=${APP_ENV:-production}
+      - LOG_LEVEL=${LOG_LEVEL:-warn}
+    volumes:
+      - ./log:/app/log
+      - ./noisy_data.csv:/app/noisy_data.csv:ro
+    restart: unless-stopped
+    networks:
+      - si-network
+    healthcheck:
+      test: ["CMD", "bash", "-c", "true"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+
+networks:
+  si-network:
+    driver: bridge

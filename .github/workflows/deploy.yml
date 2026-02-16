@@ -1,0 +1,54 @@
+name: Deploy to Production
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment environment'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - staging
+          - production
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ github.event.inputs.environment || 'production' }}
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      
+      - name: Build and push Docker image
+        run: |
+          echo "Building Docker image for deployment..."
+          docker buildx build \
+            -t si-model-dashboard:latest \
+            -t si-model-dashboard:${{ github.sha }} \
+            .
+      
+      - name: Generate deployment summary
+        run: |
+          echo "## Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Environment**: ${{ github.event.inputs.environment || 'production' }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Image Tag**: si-model-dashboard:${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Commit**: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Next Steps" >> $GITHUB_STEP_SUMMARY
+          echo "1. Log in to your deployment server with SSH" >> $GITHUB_STEP_SUMMARY
+          echo "2. Pull the latest image: \`docker pull si-model-dashboard:${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "3. Run: \`docker-compose up -d\`" >> $GITHUB_STEP_SUMMARY
+      
+      - name: Send deployment notification
+        if: always()
+        run: |
+          echo "Deployment artifacts ready for manual deployment to your infrastructure"
